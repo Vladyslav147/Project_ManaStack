@@ -120,6 +120,7 @@ class InventoryHistory(models.Model):
         ('end_card', 'Закончился срок карточки'),
         ('mana_accrual', 'Начисление маны'),
         ('mana_spend', 'Трата маны'), 
+        ('mana_send', 'Передача маны'), 
     ]
 
     user = models.ForeignKey(
