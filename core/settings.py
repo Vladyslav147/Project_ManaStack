@@ -4,7 +4,8 @@ from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-SECRET_KEY = 'django-insecure-g(!flb%b!j!4^aq^756%rc-c&$2-6#*!-jt%(xaka%z@gs!2hj'
+SECRET_KEY = config('SECRET_KEY')
+
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -29,6 +30,7 @@ LOCAL_APPS = [
     'apps.accounts',
     'apps.main',
     'apps.comments',
+    'apps.store',
 
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
