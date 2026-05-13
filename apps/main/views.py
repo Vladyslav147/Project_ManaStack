@@ -98,6 +98,7 @@ class MyPostView(generics.ListAPIView):
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 def post_by_category(request, category_slug):
+    """Посты определенной категории"""
     category = get_object_or_404(Category, slug=category_slug)
     posts = Post.objects.filter(category=category, status='published').select_related('author', 'category').prefetch_related('tag').order_by('-created_at')
 
@@ -112,6 +113,7 @@ def post_by_category(request, category_slug):
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 def popular_posts(request):
+    """Топ 10 популярных постов"""
     posts = Post.objects.filter(status='published').select_related('author', 'category').prefetch_related('tag').order_by('-views_count')[:10]
 
     serializer = PostListSerializer(posts, many=True, context={'request': request})

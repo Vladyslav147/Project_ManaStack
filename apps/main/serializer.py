@@ -21,7 +21,7 @@ class CategorySerializer(serializers.ModelSerializer):
         return obj.posts.filter(status='published').count()
     
     def create(self, validated_data):
-        validated_data['slig'] = slugify(validated_data['title'])
+        validated_data['slug'] = slugify(validated_data['title'])
         return super().create(validated_data)
     
 
@@ -47,14 +47,14 @@ class PostListSerializer(serializers.ModelSerializer):
 class PostDetailSerializer(serializers.ModelSerializer):
     author_info = serializers.SerializerMethodField()
     category_info = serializers.SerializerMethodField()
-    # can_pin = serializers.SerializerMethodField()
+    can_pin = serializers.SerializerMethodField()
     comment_count = serializers.ReadOnlyField()
     tag = TagShortSerializer(many=True, read_only=True)
 
     class Meta:
         model = Post
         fields = ['id', 'title', 'description', 'image', 'status', 'slug', 'comment_count',
-                'category_info', 'created_at', 'views_count', 'tag', 'author_info']
+                'category_info', 'created_at', 'views_count', 'tag', 'author_info', 'can_pin']
         read_only_fields = ['id', 'slug', 'comment_count', 'created_at', 'views_count']
 
     def get_author_info(self, obj):
@@ -76,11 +76,11 @@ class PostDetailSerializer(serializers.ModelSerializer):
             }
         return None
     
-    # def get_can_pin(self, obj):
-    #     request = self.context.get('request')
-    #     if not request or  not request.user.is_authenticated:
-    #         return False
-    #     return obj.can_be_pinned_by(request.user)
+    def get_can_pin(self, obj):
+        request = self.context.get('request')
+        if not request or  not request.user.is_authenticated:
+            return False
+        return obj.can_be_pinned_by(request.user)
     
 
 

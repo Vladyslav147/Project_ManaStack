@@ -1,8 +1,10 @@
-from rest_framework import status, generics, permissions
+from rest_framework import status, generics, permissions, permissions, filters
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from django.contrib.auth import login
+from apps.main.permissions import IsAuthorOrReadOnly
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import User
 from .serializers import (
@@ -10,6 +12,7 @@ from .serializers import (
     UserLoginSerializer,
     UserProfileSerializer,
     UserUpdateSerializer,
+    UsersListSerializer
 )
 
 class RegisterView(generics.CreateAPIView):
@@ -56,16 +59,26 @@ class LoginView(generics.GenericAPIView):
 class ProfileView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_object(self):
-        return self.request.user
+    permission_classes = [IsAuthorOrReadOnly]
+    lookup_field = 'id'
     
     def get_serializer_class(self):
         if self.request.method == 'PUT' or self.request.method == 'PATCH':
             return UserUpdateSerializer
         return UserProfileSerializer
 
+
+class UsersListView(generics.ListAPIView):
+    """Вывод пользователей всех и поиск по их нику почте и т.д"""
+    queryset = User.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UsersListSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    search_fields = ['email', 'first_name', 'username', 'last_name']
+    
+    def get_queryset(self):
+        queryset = User.objects.filter(is_active=True).exclude(id=self.request.user)
+        return queryset
 
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
@@ -81,3 +94,4 @@ def logout_view(request):
     except Exception:
         return Response({'error': 'Не валидный токен'}, status=status.HTTP_400_BAD_REQUEST)
     
+

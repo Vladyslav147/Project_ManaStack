@@ -82,15 +82,18 @@ class Post(models.Model):
         self.views_count += 1
         self.save(update_fields = ['views_count'])
 
-    # def can_be_pinned_by(self, user):
-    #     if not user or not user.is_authenticated:
-    #         return False
+    @property
+    def comments_count(self):
+        return self.comments.filter(is_active = True).count()
+    
+    def can_be_pinned_by(self, user):
+        if not user or not user.is_authenticated:
+            return False
         
-    #     if self.author != user:
-    #         return False
+        if self.author != user:
+            return False 
         
-    #     # Ищем в инвентаре пользователя активную карточку типа 'pin_post'
-    #     return user.inventory.filter(card__type='is_pin', card__is_active=True).exists()
+        return user.inventory.filter(subscription_card__type='premium', status='active').exists()
     
     @property
     def comment_count(self):

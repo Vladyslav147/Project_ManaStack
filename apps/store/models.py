@@ -27,7 +27,7 @@ class Card(models.Model):
         ordering = ['price']
 
     def __str__(self):
-        return f'{self.name} {self.price}'
+        return f'Карточка:{self.name}  Цена:{self.price}'
 
 
 
@@ -89,7 +89,7 @@ class PinnedPost(models.Model):
     """Модель закрепленного поста"""
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='pinned_post')
     post = models.OneToOneField('main.Post', on_delete=models.CASCADE, related_name='pin_info')
-    penned_at = models.DateTimeField(auto_now_add=True)
+    pinned_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'PinnedPost'
@@ -137,7 +137,7 @@ class InventoryHistory(models.Model):
         related_name='history'
     )
     
-    mana_amount = models.IntegerField(help_text="Кол-во маны (отрицательное при трате, положительное при получении)")
+    mana_amount = models.IntegerField(help_text="Кол-во маны (отрицательное при трате, положительное при получении)", blank=True, null=True)
     
     status = models.CharField(max_length=20, choices=ACTION_CHOICES)
     description = models.TextField(blank=True)
