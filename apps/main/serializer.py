@@ -10,8 +10,8 @@ class TagShortSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    """Вывод категорий, создавать их нельзя"""
     post_count = serializers.SerializerMethodField()
-
     class Meta:
         model = Category
         fields = ['id', 'title', 'description', 'icon', 'slug', 'post_count']
@@ -27,6 +27,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class PostListSerializer(serializers.ModelSerializer):
+    """Вывод карточек постов"""
     comment_count = serializers.ReadOnlyField()
     author = serializers.StringRelatedField()
     category = serializers.StringRelatedField()
@@ -45,6 +46,7 @@ class PostListSerializer(serializers.ModelSerializer):
     
 
 class PostDetailSerializer(serializers.ModelSerializer):
+    """Детальная инфа поста"""
     author_info = serializers.SerializerMethodField()
     category_info = serializers.SerializerMethodField()
     can_pin = serializers.SerializerMethodField()
@@ -61,6 +63,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
         author = obj.author
         return {
             'id': author.id,
+            'email': author.email,
             'username': author.username,
             'full_name': author.full_name,
             'avatar': author.avatar.url if author.avatar else None,
@@ -78,7 +81,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
     
     def get_can_pin(self, obj):
         request = self.context.get('request')
-        if not request or  not request.user.is_authenticated:
+        if not request or not request.user.is_authenticated:
             return False
         return obj.can_be_pinned_by(request.user)
     

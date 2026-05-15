@@ -1,8 +1,10 @@
 from django.contrib import admin
-from .models import Card, InventoryCard, InventoryHistory
+from .models import Card, InventoryCard, InventoryHistory, PinnedPost
 
 admin.site.register(Card)
 admin.site.register(InventoryCard)
+admin.site.register(PinnedPost)
+
 @admin.register(InventoryHistory)
 class InventoryHistoryAdmin(admin.ModelAdmin):
     # Добавляем поле в список "только для чтения"

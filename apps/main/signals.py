@@ -1,12 +1,12 @@
-from django.db.models.signals import pre_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from apps.store.models import InventoryHistory
 from . models import Post
 
-@receiver(pre_save, sender=Post)
+@receiver(post_save, sender=Post)
 def count_post_save(sender, instance, created, **kwargs):
-    if created:
+    if created and instance.status == 'published':
         user = instance.author
         count = Post.objects.filter(author=user, status='published').count()
 

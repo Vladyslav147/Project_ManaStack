@@ -41,7 +41,10 @@ class Category(models.Model):
         super().save(*args, **kwargs)
 
 
-
+class PostManager(models.Manager):
+    def with_card_info(self):
+        return self.select_related('category', 'pin_info').prefetch_related('author', 'author__inventary', 'author__inventary__subscription_card','tag')
+    
 class Post(models.Model):
     STATUS_CHOICES = [
         ('draft', 'Draft'),
@@ -60,6 +63,8 @@ class Post(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     views_count = models.PositiveIntegerField(default=0)
+
+    objects = PostManager()
 
     class Meta:
         db_table = 'posts'

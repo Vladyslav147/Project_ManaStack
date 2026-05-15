@@ -48,7 +48,7 @@ class LoginView(generics.GenericAPIView):
         refresh = RefreshToken.for_user(user)
 
         return Response({
-            'user': UserProfileSerializer(user).data,
+            'user': UserProfileSerializer(user, context={'request': request}).data,
             'refresh': str(refresh),
             'access': str(refresh.access_token),
             'message': 'Пользователь был залогинен',
